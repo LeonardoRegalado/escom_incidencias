@@ -65,3 +65,30 @@ CREATE TABLE comentarios (
     FOREIGN KEY (id_reporte) REFERENCES reportes(id),
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE SET NULL
 );
+
+select *from usuarios;	
+select *from reportes;
+select *from categorias;
+SELECT * FROM reportes ORDER BY id DESC;
+SELECT * FROM imagenes_reporte ORDER BY id DESC;
+
+
+-- Tablas nuevas para poder agregar categorias e iconos
+CREATE TABLE categorias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    icono VARCHAR(100) -- Puedes guardar el nombre del ícono o un código emoji
+);
+
+
+ALTER TABLE reportes ADD COLUMN id_categoria INT;
+ALTER TABLE reportes ADD FOREIGN KEY (id_categoria) REFERENCES categorias(id);
+
+INSERT INTO categorias (nombre, icono) VALUES
+('Basura', '🗑️'),
+('Fuga de agua', '🚰'),
+('Luminaria', '💡'),
+('Bache', '🕳️'),
+('Ruido', '🔊'),
+('Otro', '❓');
+
