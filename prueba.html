@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mapa CDMX</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 600px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Mapa de Delegaciones CDMX</h2>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  const mapa = L.map('map').setView([19.4326, -99.1332], 10); // Coordenadas CDMX
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Mapa base © OpenStreetMap',
+  }).addTo(mapa);
+
+  // Incidentes por delegación
+  const incidentes = {
+    "CUAUHTÉMOC": 40,
+    "IZTAPALAPA": 70,
+    "COYOACÁN": 25,
+    "ÁLVARO OBREGÓN": 30,
+    // Agrega todas las delegaciones aquí
+  };
+
+  function getColor(d) {
+    return d > 60 ? '#800026' :
+        d > 40 ? '#BD0026' :
+        d > 20 ? '#E31A1C' :
+        d > 10 ? '#FC4E2A' :
+                    '#FFEDA0';
+  }
+
+  function style(feature) {
+    const nombre = feature.properties.NOMGEO.toUpperCase();
+    const valor = incidentes[nombre] || 0;
+    return {
+        fillColor: getColor(valor),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
+    };
+}
+
+  fetch("geometry.geojson")
+    .then(res => res.json())
+    .then(data => {
+      L.geoJson(data, {
+        style: style,
+        onEachFeature: function (feature, layer) {
+          const nombre = feature.properties.NOMGEO;
+          const cantidad = incidentes[nombre.toUpperCase()] || 0;
+          layer.bindPopup(`<strong>${nombre}</strong><br>Incidentes: ${cantidad}`);
+        }
+      }).addTo(mapa);
+    });
+</script>
+
+</body>
+</html>
